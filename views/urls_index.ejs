@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <title>TinyApp</title>
+</head>
+<body style="font-size:20px; padding:50px;">
+    <!-- Add EJS code here -->
+
+    <!-- Using EJS and HTML, code the urls_index.ejs file to display the following:
+A list or table of the URLs and their shortened forms. 
+A link for shortening a new URL. (href ='#' for now)
+-->
+<h1>URLS</h1>
+  <ul> 
+  
+    <%for (let element in urls){ %>
+       <li><%= element %> <%= urls[element]%></li>
+    <%}%>
+    <li><a href = '#'>Click here to shorten links</a></li>
+
+  
+</ul>
+
+
+</body>
+</html>
