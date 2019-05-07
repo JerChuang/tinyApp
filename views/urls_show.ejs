@@ -9,21 +9,21 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
+  <header>
+    <% include ./partials/_header %>
+  </header>
     <!-- Add EJS code here -->
 
     <!-- Using EJS and HTML, code the urls_index.ejs file to display the following:
 A list or table of the URLs and their shortened forms. 
 A link for shortening a new URL. (href ='#' for now)
 -->
-<h1>Short URL</h1>
-  <ul> 
-    <li><%= shortURL%> - <%=longURL%></li>
-    <li><a href = '#'>Click here to shorten links</a></li>
-
-
+  <h5><a href = '#'>Creane new TinyURL</a></h5>
   
-</ul>
-
+  <h5>Tiny URL for: <%=longURL%></h5>
+     
+      <p><%= shortURL%></p>
+    
 
 </body>
 </html>

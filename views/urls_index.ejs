@@ -9,19 +9,24 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
+  <header>
+    <% include ./partials/_header %>
+  </header>
     <!-- Add EJS code here -->
 
     <!-- Using EJS and HTML, code the urls_index.ejs file to display the following:
 A list or table of the URLs and their shortened forms. 
 A link for shortening a new URL. (href ='#' for now)
 -->
-<h1>URLS</h1>
+<h5><a href = '#'>Creane new TinyURL</a></h5>
+
+<h3>My URLs</h3>
   <ul> 
   
     <%for (let element in urls){ %>
-       <li><%= element %> <%= urls[element]%></li>
+       <li><strong><%= element %> :</strong> <%= urls[element]%></li>
     <%}%>
-    <li><a href = '#'>Click here to shorten links</a></li>
+    
 
   
 </ul>

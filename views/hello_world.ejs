@@ -1,7 +1,12 @@
 <!-- This would display the string "Hello World!" -->
 <!-- This line will not show up on the page -->
+<body>
+<header>
+    <% include ./partials/_header %>
+</header>
 <% if(greeting) {%>
     <!-- This line will only show if greeting is truthy -->
     <h1><%= greeting %></h1>
   <% }%>
+</body>
   
