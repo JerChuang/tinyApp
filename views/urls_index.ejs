@@ -19,13 +19,19 @@ A list or table of the URLs and their shortened forms.
 A link for shortening a new URL. (href ='#' for now)
 -->
 
-<h5><a href = '#'>Creane new TinyURL</a></h5>
+<h5><a href = '/urls/new'>Create new TinyURL</a></h5>
 <h3>My URLs</h3>
   <ul> 
     <%for (let element in urls){ %>
-       <li><strong><%= element %> :</strong> <%= urls[element]%></li>
-    <%}%>
+      <strong><%= element %> :</strong> <%= urls[element]%>
+        <form method="POST" action="/urls/<%= element %>/delete">
+          <button type="submit" class="btn btn-primary">Delete</button>
+        </form>
+      
+    <% } %>
   </ul>
+
+
 </body>
 </html>
   

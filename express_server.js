@@ -37,10 +37,14 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls")
+})
+
 app.post("/urls", (req, res) => {
   let short = generateRandomString();
   urlDatabase[short] = req.body.longURL;  // putting a short/long pair into urlDatabase object
-  console.log(short, urlDatabase[short]);
   res.redirect("/urls/"+short);
 });
 
