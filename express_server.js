@@ -37,7 +37,7 @@ app.get('/login', (req, res) =>{
   if (req.cookies.username){
     res.redirect('/urls');
   } else {
-    let templateVars = { username: req.cookies.username};
+    let templateVars = {username: req.cookies.username};
     res.render('urls_login', templateVars);
   }
 })
@@ -70,17 +70,17 @@ app.post('/urls/:shortURL', (req, res) => {
   res.redirect('/urls/');
 })
 
-app.post("/urls", (req, res) => {
+app.post('/urls', (req, res) => {
   let short = generateRandomString();
   urlDatabase[short] = req.body.longURL;  // putting a short/long pair into urlDatabase object
-  res.redirect("/urls/"+short);
+  res.redirect('/urls/'+short);
 });
 
-app.get("/urls/new", (req, res) => {
+app.get('/urls/new', (req, res) => {
   let templateVars = {
     username: req.cookies.username
   };
-  res.render("urls_new", templateVars);
+  res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:shortURL', (req, res) => {
@@ -89,18 +89,13 @@ app.get('/urls/:shortURL', (req, res) => {
     longURL: urlDatabase[req.params.shortURL], 
     username: req.cookies.username
   };
-  res.render("urls_show", templateVars);
+  res.render('urls_show', templateVars);
 });
 
-app.get("/u/:shortURL", (req, res) => {
+app.get('/u/:shortURL', (req, res) => {
     const longURL = urlDatabase[req.params.shortURL];
     res.redirect(longURL);
   });
-
-app.get("/hello", (req, res) => {
-  let templateVars = { greeting: 'Hello World!' };
-  res.render("hello_world", templateVars);
-});
 
 app.post('/login', (req, res) => {
   console.log(req.cookies);
