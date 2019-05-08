@@ -47,6 +47,11 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   res.redirect('/urls');
 })
 
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('/urls');
+})
+
 app.post('/urls/:shortURL', (req, res) => {
   console.log(urlDatabase[req.params.shortURL], req.body.newURL)
   urlDatabase[req.params.shortURL] = req.body.newURL;

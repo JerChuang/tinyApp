@@ -2,9 +2,14 @@
 <h1>TinyApp</h1>
 
 <body>
-
+<% if (username){ %>
 <p>currently logged in as: <%= username %> </p>
-
+<form class="form-inline" action="/logout" method="POST">
+  <div class="form-group mb-2">
+    <button type="submit" class="btn btn-primary">Logout</button>
+  </div>
+ </form>
+<% } else{ %>
  <form class="form-inline" action="/login" method="POST">
   <div class="form-group mb-2">
     <label for="longURL">Enter Username:</label>
@@ -12,5 +17,9 @@
     <button type="submit" class="btn btn-primary">Login</button>
   </div>
  </form>
+<% }; %>
+
+
+
  </body>
  </html>
