@@ -11,13 +11,10 @@ function generateRandomString() {
   const char = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let output = "";
   for (let i = 0; i < 6; i++){
-    output +=char[i];
+    output +=char[Math.floor(Math.random()*char.length)];
   };
   return output;
 }
-// Math.floor(Math.random()*char.length)
-
-console.log(generateRandomString());
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -39,8 +36,10 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  let short = generateRandomString();
+  urlDatabase[short] = req.body.longURL;  // putting a short/long pair into urlDatabase object
+  console.log(short, urlDatabase[short]);
+  res.redirect("/urls/"+short);
 });
 
 app.get("/urls/new", (req, res) => {
