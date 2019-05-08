@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const PORT = 8080; // default port 8080
-const morgan = require('morgan')
-const cookieParser = require('cookie-parser')
+const morgan = require('morgan'); // console logs get/post request to help with development
+const cookieParser = require('cookie-parser'); 
 const bodyParser = require('body-parser');
 
 app.set('view engine', 'ejs');
@@ -15,7 +15,7 @@ function generateRandomString() {
   const char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let output = '';
   for (let i = 0; i < 6; i++){
-    output +=char[Math.floor(Math.random()*char.length)];
+    output += char[Math.floor(Math.random() * char.length)];
   };
   return output;
 }
@@ -25,10 +25,22 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
-
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  if (req.cookies.username){
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login')
+  } 
 });
+
+app.get('/login', (req, res) =>{
+  if (req.cookies.username){
+    res.redirect('/urls');
+  } else {
+    let templateVars = { username: req.cookies.username};
+    res.render('urls_login', templateVars);
+  }
+})
 
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
