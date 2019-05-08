@@ -24,9 +24,11 @@ A link for shortening a new URL. (href ='#' for now)
   <ul> 
     <%for (let element in urls){ %>
       <strong><%= element %> :</strong> <%= urls[element]%>
-        <form method="POST" action="/urls/<%= element %>/delete">
-          <button type="submit" class="btn btn-primary">Delete</button>
-        </form>
+      <a href = "/urls/<%= element %>/">edit</a>
+
+      <form method="POST" action="/urls/<%= element %>/delete">
+        <button type="submit" class="btn btn-primary">Delete</button>
+      </form>
       
     <% } %>
   </ul>
