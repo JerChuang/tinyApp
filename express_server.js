@@ -1,11 +1,13 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+const morgan = require("morgan")
 
 app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(morgan("dev"));
 
 function generateRandomString() {
   const char = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
