@@ -1,17 +1,19 @@
-const express = require("express");
+const express = require('express');
 const app = express();
 const PORT = 8080; // default port 8080
-const morgan = require("morgan")
+const morgan = require('morgan')
+const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser');
 
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
 
-const bodyParser = require("body-parser");
+app.use(morgan('dev'));
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(morgan("dev"));
 
 function generateRandomString() {
-  const char = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let output = "";
+  const char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let output = '';
   for (let i = 0; i < 6; i++){
     output +=char[Math.floor(Math.random()*char.length)];
   };
@@ -19,33 +21,36 @@ function generateRandomString() {
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  'b2xVn2': 'http://www.lighthouselabs.ca',
+  '9sm5xK': 'http://www.google.com'
 };
 
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
+app.get('/', (req, res) => {
+  res.send('Hello!');
 });
 
-app.get("/urls.json", (req, res) => {
+app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
+app.get('/urls', (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies.username
+   };
+  res.render('urls_index', templateVars);
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.post('/urls/:shortURL/delete', (req, res) => {
   delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  res.redirect('/urls');
 })
 
-app.post("/urls/:shortURL", (req, res) => {
+app.post('/urls/:shortURL', (req, res) => {
   console.log(urlDatabase[req.params.shortURL], req.body.newURL)
   urlDatabase[req.params.shortURL] = req.body.newURL;
-  res.redirect("/urls/");
+  res.redirect('/urls/');
 })
 
 app.post("/urls", (req, res) => {
@@ -55,11 +60,18 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+    username: req.cookies.username
+  };
+  res.render("urls_new", templateVars);
 });
 
-app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+app.get('/urls/:shortURL', (req, res) => {
+  let templateVars = { 
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL], 
+    username: req.cookies.username
+  };
   res.render("urls_show", templateVars);
 });
 
@@ -72,6 +84,13 @@ app.get("/hello", (req, res) => {
   let templateVars = { greeting: 'Hello World!' };
   res.render("hello_world", templateVars);
 });
+
+app.post('/login', (req, res) => {
+  console.log(req.cookies);
+  let value = generateRandomString()
+  res.cookie('username', req.body.username); //issued cookies here
+  res.redirect('/urls');
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
