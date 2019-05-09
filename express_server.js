@@ -32,8 +32,7 @@ const users = {
     password: "$2b$12$KdvxpFZrhGLp4Af1ghCz4uUkkWHssRM0wuvbXEUfY3bBdICOPMFcy"
   }
 }
- console.log(bcrypt.hashSync('test', 12));
- console.log(bcrypt.hashSync('test2', 12));
+
 
 // Global functions:
 function generateRandomString() {
@@ -203,5 +202,5 @@ app.post('/logout', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`TinyApp server listening on port ${PORT}!`);
+  console.log( `TinyApp server listening on port ${PORT}!`);
 });
