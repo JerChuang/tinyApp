@@ -3,36 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
   <title>TinyApp</title>
 </head>
+
 <body style="font-size:20px; padding:50px;">
-  <header>
-    <% include ./partials/_header %>
-  </header>
-    <!-- Add EJS code here -->
-
-    <!-- Using EJS and HTML, code the urls_index.ejs file to display the following:
-A list or table of the URLs and their shortened forms. 
-A link for shortening a new URL. (href ='#' for now)
--->
-  <h5><a href = '/urls/new'>Create new TinyURL</a></h5>
-  
-  <h5>Short URL: <%=shortURL%></h5>
+<header>
+  <% include ./partials/_header %>
+</header>
+    
+<h5><a href = '/urls/new'>Create new TinyURL</a></h5>
+<h5>Short URL: <%=shortURL%></h5>
      
-  
-
-
-  <form class="form-inline" action="/urls/<%= shortURL%>" method="POST">
+<form class="form-inline" action="/urls/<%= shortURL%>" method="POST">
   <div class="form-group mb-2">
     <label for="longURL">Enter the new URL:</label>
     <input class="form-control" type="text" name="newURL" placeholder="<%=longURL%>" style="width: 300px; margin: 1em">
     <button type="submit" class="btn btn-primary">Update</button>
   </div>
-  </form>
+</form>
     
-
 </body>
 </html>
