@@ -15,7 +15,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 // Gloal Objects:
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  iaDFej: { longURL: "http://lighthouse.ca", userID: "kRYfIf"}
 };
 
 const users = { 
@@ -50,6 +51,16 @@ function emailLookUp(email){
   return false;
 }
 
+function urlsForUser(id){
+  let output = {};
+  for (let links in urlDatabase){
+    if (urlDatabase[links].userID === id){
+      output[links] = urlDatabase[links];
+    }
+  }
+  return output;
+}
+
 
 // Server endpoints:
 app.get('/', (req, res) => {
@@ -62,7 +73,7 @@ app.get('/', (req, res) => {
 
 app.get('/urls', (req, res) => {
   const templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(req.cookies.user_id),
     user: users[req.cookies.user_id]
   };
   res.render('urls_index', templateVars);
@@ -80,6 +91,12 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res) => {
+  const userlink = urlsForUser(req.cookies.user_id)
+  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Make sure the shortURL link exists in the first place so website doesn't crash
+    res.status('400');
+    res.send('This url does not exist or not available for you to edit')
+  }
+  
   const templateVars = { 
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL, 
@@ -99,7 +116,7 @@ app.post('/urls', (req, res) => {
   urlDatabase[short] = {
     longURL: req.body.longURL,
     userID: req.cookies.user_id
-  } // updating urlDatabase with objects of shortURL: longURL/userID 
+  }; // updating urlDatabase with objects of shortURL: longURL/userID 
   res.redirect('/urls/'+short);
 });
 
