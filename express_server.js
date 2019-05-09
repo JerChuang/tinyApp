@@ -44,7 +44,7 @@ function generateRandomString() {
 function emailLookUp(email){
   for (let person in users){
     if (users[person].email === email){
-      return true;
+      return users[person];
     }
   }
   return false;
@@ -61,8 +61,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  let id = req.cookies.user_id
-  let templateVars = {
+  const templateVars = {
     urls: urlDatabase,
     user: users[req.cookies.user_id]
   };
@@ -70,14 +69,14 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  let templateVars = {
+  const templateVars = {
     user: users[req.cookies.user_id]
   };
   res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  let templateVars = { 
+  const templateVars = { 
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL], 
     user: users[req.cookies.user_id]
@@ -92,7 +91,7 @@ app.get('/u/:shortURL', (req, res) => {
 
 
 app.post('/urls', (req, res) => {
-  let short = generateRandomString();
+  const short = generateRandomString();
   urlDatabase[short] = req.body.longURL;  // putting a short/long pair into urlDatabase object
   res.redirect('/urls/'+short);
 });
@@ -112,7 +111,7 @@ app.get('/login', (req, res) =>{
   if (req.cookies.user_id){
     res.redirect('/urls');
   } else {
-    let templateVars = {
+    const templateVars = {
       user: users[req.cookies.user_id]
     };
     res.render('urls_login', templateVars);
@@ -120,7 +119,7 @@ app.get('/login', (req, res) =>{
 });
 
 app.get ('/register', (req,res) => {
-  let templateVars = {
+  const templateVars = {
     user: users[req.cookies.user_id]
   };
   res.render('urls_register', templateVars);
@@ -139,15 +138,25 @@ app.post ('/register', (req,res) =>{
     email: req.body.email,
     password: req.body.password
   };
-  res.cookie('user_id', newID);
+  res.cookie('user_id', newID); //issued cookie upon registration
   res.redirect('/urls');
 });
 
 app.post('/login', (req, res) => {
-  console.log(req.cookies);
+  const userAccount = emailLookUp(req.body.email);
+  if (userAccount){
+    if (userAccount.password === req.body.password){
+      res.cookie('user_id', userAccount.id); //issued cookie after log in
+      res.redirect('/urls');
+    } else {
+      res.status('403')
+      res.send('Error 403 - Forbidden!');      
+    }
+  } else {
+    res.status('403')
+    res.send('Error 403 - Forbidden!');
+  } 
   
-  res.cookie('user_id', req.body.user_id); //issued cookies here
-  res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {

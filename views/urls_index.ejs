@@ -11,19 +11,19 @@
 <body style="font-size:20px; padding:50px;">
 <header><% include ./partials/_header %></header>
     
-<h5><a href = '/urls/new'>Create new TinyURL</a></h5>
-<h3>My URLs</h3>
-<ul> 
-  <%for (let element in urls){ %>
-    <strong><%= element %> :</strong> <%= urls[element]%>
-    <a href = "/urls/<%= element %>/">edit</a>
 
-    <form method="POST" action="/urls/<%= element %>/delete">
-      <button type="submit" class="btn btn-primary">Delete</button>
-    </form>
-    
-  <% } %>
-</ul>
+<h3>My URLs</h3>
+  <ul> 
+    <%for (let element in urls){ %>
+      <strong><%= element %> :</strong> <%= urls[element]%>
+      <a href = "/urls/<%= element %>/">edit</a>
+
+      <form method="POST" action="/urls/<%= element %>/delete">
+        <button type="submit" class="btn btn-primary">Delete</button>
+      </form>
+      
+    <% } %>
+  </ul>
 
 
 </body>

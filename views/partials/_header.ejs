@@ -12,6 +12,7 @@
 <h1>TinyApp</h1>
 
 <% if (user){ %>
+<h5><a href = '/urls'>URLs</a> | <a href = '/urls/new'>Create new TinyURL</a></h5>
 <p>currently logged in as: <%= user.email %> </p>
 <form class="form-inline" action="/logout" method="POST">
   <div class="form-group mb-2">
@@ -19,13 +20,10 @@
   </div>
 </form>
 <% } else{ %>
-<form class="form-inline" action="/login" method="POST">
-<div class="form-group mb-2">
-  <label for="longURL">Enter Username:</label>
-  <input class="form-control" type="text" name="username" placeholder="Your Username" style="width: 300px; margin: 1em">
-  <button type="submit" class="btn btn-primary">Login</button>
-</div>
-</form>
+
+<p><a href = "/login">Login</a> |
+<a href = "/register">Register</a>
+</p>
 <% }; %>
 
 </body>
