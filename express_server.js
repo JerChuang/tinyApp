@@ -1,3 +1,4 @@
+// Required Modules:
 const express = require('express');
 const morgan = require('morgan'); // console logs get/post request to help with development
 const cookieParser = require('cookie-parser'); 
@@ -11,15 +12,7 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 
-function generateRandomString() {
-  const char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let output = '';
-  for (let i = 0; i < 6; i++){
-    output += char[Math.floor(Math.random() * char.length)];
-  };
-  return output;
-}
-
+// Gloal Objects:
 const urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://www.google.com'
@@ -31,13 +24,34 @@ const users = {
     email: "user@example.com", 
     password: "purple-monkey-dinosaur"
   },
- "kRYfIf": {
+  "kRYfIf": {
     id: "kRYfIf", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
   }
 }
 
+// Global functions:
+function generateRandomString() {
+  const char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let output = '';
+  for (let i = 0; i < 6; i++){
+    output += char[Math.floor(Math.random() * char.length)];
+  };
+  return output;
+}
+
+function emailLookUp(email){
+  for (let person in users){
+    if (users[person].email === email){
+      return true;
+    }
+  }
+  return false;
+}
+
+
+// Server endpoints:
 app.get('/', (req, res) => {
   if (req.cookies.username){
     res.redirect('/urls');
@@ -108,6 +122,12 @@ app.get ('/register', (req,res) => {
 });
 
 app.post ('/register', (req,res) =>{
+  
+  if (!req.body.email || !req.body.password || emailLookUp(req.body.email)){
+    res.status('400');
+    res.send('Error 400 - Bad Request!');
+  }
+  
   newID = generateRandomString();
   users[newID] = {
     id: newID,
