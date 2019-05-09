@@ -14,15 +14,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 // Gloal Objects:
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com'
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
 const users = { 
-  "vZRrv6": {
-    id: "vZRrv6", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
+  "aJ48lW": {
+    id: "aJ48lW", 
+    email: "test@test.com", 
+    password: "test"
   },
   "kRYfIf": {
     id: "kRYfIf", 
@@ -82,27 +82,29 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL], 
+    longURL: urlDatabase[req.params.shortURL].longURL, 
     user: users[req.cookies.user_id]
   };
   res.render('urls_show', templateVars);
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
 
 app.post('/urls', (req, res) => {
   const short = generateRandomString();
-  urlDatabase[short] = req.body.longURL;  // putting a short/long pair into urlDatabase object
+  urlDatabase[short] = {
+    longURL: req.body.longURL,
+    userID: req.cookies.user_id
+  } // updating urlDatabase with objects of shortURL: longURL/userID 
   res.redirect('/urls/'+short);
 });
 
 app.post('/urls/:shortURL', (req, res) => {
-  console.log(urlDatabase[req.params.shortURL], req.body.newURL)
-  urlDatabase[req.params.shortURL] = req.body.newURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
   res.redirect('/urls/');
 });
 
