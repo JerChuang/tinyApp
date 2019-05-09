@@ -11,8 +11,8 @@
 <body style="font-size:20px; padding:50px;">
 <h1>TinyApp</h1>
 
-<% if (username){ %>
-<p>currently logged in as: <%= username %> </p>
+<% if (user){ %>
+<p>currently logged in as: <%= user.email %> </p>
 <form class="form-inline" action="/logout" method="POST">
   <div class="form-group mb-2">
     <button type="submit" class="btn btn-primary">Logout</button>
