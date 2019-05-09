@@ -3,6 +3,7 @@ const express = require('express');
 const morgan = require('morgan'); // console logs get/post request to help with development
 const cookieParser = require('cookie-parser'); 
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -23,14 +24,16 @@ const users = {
   "aJ48lW": {
     id: "aJ48lW", 
     email: "test@test.com", 
-    password: "test"
+    password: "$2b$12$j49neYspr/OIvLHiv6Y1zOSqnzltqdTo9ZokeLiTdVGebcgrsprWa"
   },
   "kRYfIf": {
     id: "kRYfIf", 
     email: "user2@example.com", 
-    password: "dishwasher-funk"
+    password: "$2b$12$KdvxpFZrhGLp4Af1ghCz4uUkkWHssRM0wuvbXEUfY3bBdICOPMFcy"
   }
 }
+ console.log(bcrypt.hashSync('test', 12));
+ console.log(bcrypt.hashSync('test2', 12));
 
 // Global functions:
 function generateRandomString() {
@@ -171,7 +174,7 @@ app.post ('/register', (req,res) =>{
   users[newID] = {
     id: newID,
     email: req.body.email,
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password, 12)
   };
   res.cookie('user_id', newID); //issued cookie upon registration
   res.redirect('/urls');
@@ -180,7 +183,7 @@ app.post ('/register', (req,res) =>{
 app.post('/login', (req, res) => {
   const userAccount = emailLookUp(req.body.email);
   if (userAccount){
-    if (userAccount.password === req.body.password){
+    if (bcrypt.compareSync(req.body.password, userAccount.password)){
       res.cookie('user_id', userAccount.id); //issued cookie after log in
       res.redirect('/urls');
     } else {
