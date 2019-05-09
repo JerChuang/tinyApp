@@ -121,11 +121,23 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/urls/:shortURL', (req, res) => {
+  const userlink = urlsForUser(req.cookies.user_id);
+  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Check if link exists or belong to user
+    res.status('400');
+    res.send('This url does not exist or not available for you to edit')
+  }
+
   urlDatabase[req.params.shortURL].longURL = req.body.newURL;
   res.redirect('/urls/');
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
+  const userlink = urlsForUser(req.cookies.user_id);
+  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Check if link exists or belong to user
+    res.status('400');
+    res.send('This url does not exist or not available for you to delete')
+  }
+
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
