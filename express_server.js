@@ -25,6 +25,19 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com'
 };
 
+const users = { 
+  "vZRrv6": {
+    id: "vZRrv6", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "kRYfIf": {
+    id: "kRYfIf", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
 app.get('/', (req, res) => {
   if (req.cookies.username){
     res.redirect('/urls');
@@ -89,9 +102,25 @@ app.get('/login', (req, res) =>{
   }
 });
 
+app.get ('/register', (req,res) => {
+  let templateVars = {username: req.cookies.username};
+  res.render('urls_register', templateVars);
+});
+
+app.post ('/register', (req,res) =>{
+  newID = generateRandomString();
+  users[newID] = {
+    id: newID,
+    email: req.body.email,
+    password: req.body.password
+  };
+  res.cookie('username', newID);
+  res.redirect('/urls');
+});
+
 app.post('/login', (req, res) => {
   console.log(req.cookies);
-  let value = generateRandomString()
+  
   res.cookie('username', req.body.username); //issued cookies here
   res.redirect('/urls');
 });
