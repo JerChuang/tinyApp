@@ -15,7 +15,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['hippopotamus'],
   // Cookie Options
-  maxAge: 5 * 60 * 1000 // 5 minutes
+  maxAge: 60 * 60 * 1000 // expires in 1 hour
 }))
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -25,19 +25,22 @@ const urlDatabase = {
     longURL: 'https://www.tsn.ca',
     userID: 'aJ48lW',
     counter: 0,
-    visitors: []
+    visitors: [],
+    visits: []
   },
   i3BoGr: {
     longURL: 'https://www.google.ca',
     userID: 'aJ48lW',
     counter: 0,
-    visitors: []
+    visitors: [],
+    visits: []
   },
   iaDFej: {
     longURL: 'http://lighthouse.ca',
     userID: 'kRYfIf',
     counter: 0,
-    visitors: []
+    visitors: [],
+    visits: []
   }
 };
 
@@ -123,7 +126,8 @@ app.get('/urls/:shortURL', (req, res) => {
     longURL: urlDatabase[req.params.shortURL].longURL, 
     user: users[req.session.user_id],
     counter: urlDatabase[req.params.shortURL].counter,
-    visitors: urlDatabase[req.params.shortURL].visitors.length
+    visitors: urlDatabase[req.params.shortURL].visitors.length,
+    visits: urlDatabase[req.params.shortURL].visits
   };
   res.render('urls_show', templateVars);
 });
@@ -132,12 +136,19 @@ app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
   urlDatabase[req.params.shortURL].counter += 1;  //increase count by 1 everytime a get request is sent for this link
   // check if there's visitor cookie, issue visitor cookie if it's a new visitor
+  console.log(req.session.visitor_id);
   if(!req.session.visitor_id){
     let newID = generateRandomString();
     req.session.visitor_id = newID;
-    urlDatabase[req.params.shortURL].visitors.push(newID)
+    urlDatabase[req.params.shortURL].visitors.push(newID)   //stores visitor id
     console.log(urlDatabase);
-  }
+  } else { // if visitor has an exisiting id, but has not visited this link yet, store id in database
+    if(!urlDatabase[req.params.shortURL].visitors.includes(req.session.visitor_id)){
+      urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id)
+    } 
+  };
+  // store timestamps and visitor id for each visit
+  
   res.redirect(longURL);
 });
 
@@ -148,7 +159,8 @@ app.post('/urls', (req, res) => {
       longURL: req.body.longURL,
       userID: req.session.user_id,
       counter: 0,
-      visitors: []
+      visitors: [],
+      visits: []
     }; 
     res.redirect('/urls/'+short);
   } else {
