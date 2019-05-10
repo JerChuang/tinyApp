@@ -1,32 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
-</head>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <title>TinyApp</title>
+  </head>
 
-<body style="font-size:20px; padding:50px;">
-  <header>
-    <% include ./partials/_header %>
-  </header>
-
-<form class="form-inline" action="/register" method="POST">
-<div class="form-group mb-2">
-  
-  <label for="email">E-mail:</label>
-  <input class="form-control" type="email" name="email" placeholder="Your E-mail" style="width: 300px; margin: 1em">
-  <label for="password">Password:</label>
-  <input class="form-control" type="password" name="password" placeholder="password" style="width: 300px; margin: 1em">
-  <button type="submit" class="btn btn-primary">Register!</button>
- 
-</div>
-</form>
-
-
-    
-</body>
+  <body style="font-size:20px; padding:50px;">
+    <header> <% include ./partials/_header %> </header>
+    <form class="form-inline" action="/register" method="POST">
+      <div class="form-group mb-2">
+        <label for="email">E-mail:</label>
+        <input class="form-control" type="email" name="email" placeholder="Your E-mail" style="width: 300px; margin: 1em">
+        <label for="password">Password:</label>
+        <input class="form-control" type="password" name="password" placeholder="password" style="width: 300px; margin: 1em">
+        <button type="submit" class="btn btn-primary">Register!</button> 
+      </div>
+    </form>   
+  </body>
 </html>
   
