@@ -136,19 +136,17 @@ app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
   urlDatabase[req.params.shortURL].counter += 1;  //increase count by 1 everytime a get request is sent for this link
   // check if there's visitor cookie, issue visitor cookie if it's a new visitor
-  console.log(req.session.visitor_id);
   if(!req.session.visitor_id){
     let newID = generateRandomString();
     req.session.visitor_id = newID;
     urlDatabase[req.params.shortURL].visitors.push(newID)   //stores visitor id
-    console.log(urlDatabase);
   } else { // if visitor has an exisiting id, but has not visited this link yet, store id in database
     if(!urlDatabase[req.params.shortURL].visitors.includes(req.session.visitor_id)){
       urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id)
     } 
   };
-  // store timestamps and visitor id for each visit
-  
+  // store timestamp and visitor id for each visit
+  urlDatabase[req.params.shortURL].visits.push(`Visited by ${req.session.visitor_id} on ${Date()}`);
   res.redirect(longURL);
 });
 

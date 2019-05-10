@@ -15,6 +15,12 @@
     <h5>Short URL: <%=shortURL%></h5>
     <h6>This link has been visited <%=counter%> times</h6>
     <h6>This link has been visited by <%=visitors%> different visitors</h6>
+    <p>
+      <% for(let entry of visits) {%>
+       <li> <%=entry%> </li>
+      <%}%>
+    
+    </p>
 
     <form class="form-inline" method="POST" action="/urls/<%=shortURL%>?_method=PUT">
     <div class="form-group mb-2">
