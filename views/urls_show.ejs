@@ -13,13 +13,14 @@
   <!-- Check if user logged in, display page for shortURL link and form for upating this shortURL -->
   <%if (user){%>
     <h5>Short URL: <%=shortURL%></h5>
+    <h6>This link was created on <%=createdTime%></h6>
     <h6>This link has been visited <%=counter%> times</h6>
     <h6>This link has been visited by <%=visitors%> different visitors</h6>
+    
     <p>
       <% for(let entry of visits) {%>
        <li> <%=entry%> </li>
       <%}%>
-    
     </p>
 
     <form class="form-inline" method="POST" action="/urls/<%=shortURL%>?_method=PUT">

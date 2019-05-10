@@ -26,21 +26,24 @@ const urlDatabase = {
     userID: 'aJ48lW',
     counter: 0,
     visitors: [],
-    visits: []
+    visits: [],
+    createdTime: "Fri May 10 2019 22:33:58 GMT+0000 (UTC)"
   },
   i3BoGr: {
     longURL: 'https://www.google.ca',
     userID: 'aJ48lW',
     counter: 0,
     visitors: [],
-    visits: []
+    visits: [],
+    createdTime: "Fri May 10 2019 22:33:58 GMT+0000 (UTC)"
   },
   iaDFej: {
     longURL: 'http://lighthouse.ca',
     userID: 'kRYfIf',
     counter: 0,
     visitors: [],
-    visits: []
+    visits: [],
+    createdTime: "Fri May 10 2019 22:33:58 GMT+0000 (UTC)"
   }
 };
 
@@ -96,11 +99,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  const templateVars = {
-    urls: urlsForUser(req.session.user_id),
-    user: users[req.session.user_id]
-  };
-  res.render('urls_index', templateVars);
+  if (users[req.session.user_id]){    //check if user id from cookie exists in database, in case of cookies created before server restarted
+    const templateVars = {
+      urls: urlsForUser(req.session.user_id),
+      user: users[req.session.user_id]
+    };
+    res.render('urls_index', templateVars);
+  } else {
+    res.redirect('login');
+  }
 });
 
 app.get('/urls/new', (req, res) => {
@@ -127,12 +134,17 @@ app.get('/urls/:shortURL', (req, res) => {
     user: users[req.session.user_id],
     counter: urlDatabase[req.params.shortURL].counter,
     visitors: urlDatabase[req.params.shortURL].visitors.length,
-    visits: urlDatabase[req.params.shortURL].visits
+    visits: urlDatabase[req.params.shortURL].visits,
+    createdTime: urlDatabase[req.params.shortURL].createdTime
   };
   res.render('urls_show', templateVars);
 });
 
 app.get('/u/:shortURL', (req, res) => {
+  if (!urlDatabase[req.params.shortURL]){  //check if link exists or belong to the user
+    res.status('400');
+    res.send('This url does not exist')
+  }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   urlDatabase[req.params.shortURL].counter += 1;  //increase count by 1 everytime a get request is sent for this link
   // check if there's visitor cookie, issue visitor cookie if it's a new visitor
@@ -153,12 +165,13 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls', (req, res) => {
   if (req.session.user_id){
     const short = generateRandomString();
-    urlDatabase[short] = {              // updating urlDatabase with objects of shortURL: longURL/userID 
+    urlDatabase[short] = {              // updating urlDatabase with objects of shortURL{} 
       longURL: req.body.longURL,
       userID: req.session.user_id,
       counter: 0,
       visitors: [],
-      visits: []
+      visits: [],
+      createdTime: new Date()
     }; 
     res.redirect('/urls/'+short);
   } else {
@@ -191,7 +204,7 @@ app.delete('/urls/:shortURL', (req, res) => {
 });
 
 app.get('/login', (req, res) =>{
-  if (req.session.user_id){
+  if (users[req.session.user_id]){
     res.redirect('/urls');
   } else {
     const templateVars = {
@@ -202,7 +215,7 @@ app.get('/login', (req, res) =>{
 });
 
 app.get ('/register', (req,res) => {
-  if (req.session.user_id){
+  if (users[req.session.user_id]){
     res.redirect('/urls');
   } else {
     const templateVars = {
@@ -231,7 +244,7 @@ app.post('/login', (req, res) => {
 app.post ('/register', (req,res) =>{
   if (!req.body.email || !req.body.password || emailLookUp(req.body.email)){
     res.status('400');
-    res.send('Error 400 - Bad Request!');
+    return res.send('Error 400 - Bad Request!'); 
   }
   
   newID = generateRandomString();
