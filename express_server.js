@@ -15,24 +15,39 @@ app.use(cookieSession({
   name: 'session',
   keys: ['hippopotamus'],
   // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 5 * 60 * 1000 // 5 minutes
 }))
 app.use(bodyParser.urlencoded({extended: true}));
 
 // Gloal Objects:
 const urlDatabase = {
-  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'aJ48lW', counter: 0},
-  i3BoGr: { longURL: 'https://www.google.ca', userID: 'aJ48lW', counter: 0},
-  iaDFej: { longURL: 'http://lighthouse.ca', userID: 'kRYfIf', counter: 0}
+  b6UTxQ: {
+    longURL: 'https://www.tsn.ca',
+    userID: 'aJ48lW',
+    counter: 0,
+    visitors: []
+  },
+  i3BoGr: {
+    longURL: 'https://www.google.ca',
+    userID: 'aJ48lW',
+    counter: 0,
+    visitors: []
+  },
+  iaDFej: {
+    longURL: 'http://lighthouse.ca',
+    userID: 'kRYfIf',
+    counter: 0,
+    visitors: []
+  }
 };
 
-const users = { 
-  'aJ48lW': {
+const users = {
+  aJ48lW: {
     id: 'aJ48lW', 
     email: 'test@test.com', 
     password: '$2b$12$j49neYspr/OIvLHiv6Y1zOSqnzltqdTo9ZokeLiTdVGebcgrsprWa'
   },
-  'kRYfIf': {
+  kRYfIf: {
     id: 'kRYfIf', 
     email: 'user2@example.com', 
     password: '$2b$12$KdvxpFZrhGLp4Af1ghCz4uUkkWHssRM0wuvbXEUfY3bBdICOPMFcy'
@@ -107,7 +122,8 @@ app.get('/urls/:shortURL', (req, res) => {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL, 
     user: users[req.session.user_id],
-    counter: urlDatabase[req.params.shortURL].counter
+    counter: urlDatabase[req.params.shortURL].counter,
+    visitors: urlDatabase[req.params.shortURL].visitors.length
   };
   res.render('urls_show', templateVars);
 });
@@ -115,6 +131,13 @@ app.get('/urls/:shortURL', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
   urlDatabase[req.params.shortURL].counter += 1;  //increase count by 1 everytime a get request is sent for this link
+  // check if there's visitor cookie, issue visitor cookie if it's a new visitor
+  if(!req.session.visitor_id){
+    let newID = generateRandomString();
+    req.session.visitor_id = newID;
+    urlDatabase[req.params.shortURL].visitors.push(newID)
+    console.log(urlDatabase);
+  }
   res.redirect(longURL);
 });
 
@@ -124,7 +147,8 @@ app.post('/urls', (req, res) => {
     urlDatabase[short] = {              // updating urlDatabase with objects of shortURL: longURL/userID 
       longURL: req.body.longURL,
       userID: req.session.user_id,
-      counter: 0
+      counter: 0,
+      visitors: []
     }; 
     res.redirect('/urls/'+short);
   } else {
