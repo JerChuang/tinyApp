@@ -21,9 +21,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 // Gloal Objects:
 const urlDatabase = {
-  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'aJ48lW' },
-  i3BoGr: { longURL: 'https://www.google.ca', userID: 'aJ48lW' },
-  iaDFej: { longURL: 'http://lighthouse.ca', userID: 'kRYfIf'}
+  b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'aJ48lW', counter: 0},
+  i3BoGr: { longURL: 'https://www.google.ca', userID: 'aJ48lW', counter: 0},
+  iaDFej: { longURL: 'http://lighthouse.ca', userID: 'kRYfIf', counter: 0}
 };
 
 const users = { 
@@ -106,13 +106,15 @@ app.get('/urls/:shortURL', (req, res) => {
   const templateVars = { 
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL, 
-    user: users[req.session.user_id]
+    user: users[req.session.user_id],
+    counter: urlDatabase[req.params.shortURL].counter
   };
   res.render('urls_show', templateVars);
 });
 
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL;
+  urlDatabase[req.params.shortURL].counter += 1;  //increase count by 1 everytime a get request is sent for this link
   res.redirect(longURL);
 });
 
@@ -121,7 +123,8 @@ app.post('/urls', (req, res) => {
     const short = generateRandomString();
     urlDatabase[short] = {              // updating urlDatabase with objects of shortURL: longURL/userID 
       longURL: req.body.longURL,
-      userID: req.session.user_id
+      userID: req.session.user_id,
+      counter: 0
     }; 
     res.redirect('/urls/'+short);
   } else {
@@ -130,6 +133,7 @@ app.post('/urls', (req, res) => {
   }
 });
 
+//listening for put requests to /urls/:shortURL
 app.put('/urls/:shortURL', (req, res) => {
   const userlink = urlsForUser(req.session.user_id);
   if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Check if link exists or belong to user
