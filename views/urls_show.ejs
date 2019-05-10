@@ -13,7 +13,7 @@
   <!-- Check if user logged in, display page for shortURL link and form for upating this shortURL -->
   <%if (user){%>
     <h5>Short URL: <%=shortURL%></h5>
-    <form class="form-inline" action="/urls/<%=shortURL%>" method="POST">
+    <form class="form-inline" method="POST" action="/urls/<%=shortURL%>?_method=PUT">
     <div class="form-group mb-2">
       <label for="longURL">Enter the new URL:</label>
       <input class="form-control" type="text" name="newURL" placeholder="<%=longURL%>" style="width: 300px; margin: 1em">

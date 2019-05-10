@@ -18,7 +18,7 @@
       <form method="GET" action="/urls/<%=element%>">
         <button type="submit" class="btn btn-primary">Edit</button>
       </form>
-      <form method="POST" action="/urls/<%= element %>/delete">
+      <form method="POST" action="/urls/<%= element %>/?_method=DELETE">
         <button type="submit" class="btn btn-primary">Delete</button>
       </form>    
     <%}%>

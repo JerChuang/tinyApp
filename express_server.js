@@ -4,11 +4,12 @@ const morgan = require('morgan'); // module that console logs get/post request t
 const cookieSession = require('cookie-session');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 const app = express();
 const PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
-
+app.use(methodOverride('_method'));
 app.use(morgan('dev'));
 app.use(cookieSession({
   name: 'session',
@@ -129,7 +130,7 @@ app.post('/urls', (req, res) => {
   }
 });
 
-app.post('/urls/:shortURL', (req, res) => {
+app.put('/urls/:shortURL', (req, res) => {
   const userlink = urlsForUser(req.session.user_id);
   if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Check if link exists or belong to user
     res.status('400');
@@ -140,7 +141,8 @@ app.post('/urls/:shortURL', (req, res) => {
   res.redirect('/urls/');
 });
 
-app.post('/urls/:shortURL/delete', (req, res) => {
+//listening for delete requests to /urls/:shortURL
+app.delete('/urls/:shortURL', (req, res) => {
   const userlink = urlsForUser(req.session.user_id);
   if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Check if link exists or belong to user
     res.status('400');
