@@ -17,7 +17,7 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 60 * 60 * 1000 // expires in 1 hour
 }))
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Gloal Objects:
 const urlDatabase = {
@@ -49,13 +49,13 @@ const urlDatabase = {
 
 const users = {
   aJ48lW: {
-    id: 'aJ48lW', 
-    email: 'test@test.com', 
+    id: 'aJ48lW',
+    email: 'test@test.com',
     password: '$2b$12$j49neYspr/OIvLHiv6Y1zOSqnzltqdTo9ZokeLiTdVGebcgrsprWa'
   },
   kRYfIf: {
-    id: 'kRYfIf', 
-    email: 'user2@example.com', 
+    id: 'kRYfIf',
+    email: 'user2@example.com',
     password: '$2b$12$KdvxpFZrhGLp4Af1ghCz4uUkkWHssRM0wuvbXEUfY3bBdICOPMFcy'
   }
 }
@@ -64,25 +64,25 @@ const users = {
 function generateRandomString() {
   const char = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let output = '';
-  for (let i = 0; i < 6; i++){
+  for (let i = 0; i < 6; i++) {
     output += char[Math.floor(Math.random() * char.length)];
   };
   return output;
 }
 
-function emailLookUp(email){            //look up all e-mails in users object and return the matching user or return false if no match
-  for (let person in users){
-    if (users[person].email === email){
+function emailLookUp(email) {            //look up all e-mails in users object and return the matching user or return false if no match
+  for (let person in users) {
+    if (users[person].email === email) {
       return users[person];
     }
   }
   return false;
 }
 
-function urlsForUser(id){           //search for links that belong to the user, return new object with all links created by user
+function urlsForUser(id) {           //search for links that belong to the user, return new object with all links created by user
   let output = {};
-  for (let links in urlDatabase){
-    if (urlDatabase[links].userID === id){
+  for (let links in urlDatabase) {
+    if (urlDatabase[links].userID === id) {
       output[links] = urlDatabase[links];
     }
   }
@@ -90,16 +90,17 @@ function urlsForUser(id){           //search for links that belong to the user, 
 }
 
 // Server endpoints:
+
 app.get('/', (req, res) => {
-  if (req.session.user_id){
+  if (req.session.user_id) {
     res.redirect('/urls');
   } else {
     res.redirect('/login')
-  } 
+  }
 });
 
 app.get('/urls', (req, res) => {
-  if (users[req.session.user_id]){    //check if user id from cookie exists in database, in case of cookies created before server restarted
+  if (users[req.session.user_id]) {    //check if user id from cookie exists in database, in case of cookies created before server restarted
     const templateVars = {
       urls: urlsForUser(req.session.user_id),
       user: users[req.session.user_id]
@@ -111,7 +112,7 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  if(req.session.user_id){
+  if (users[req.session.user_id]) {
     const templateVars = {
       user: users[req.session.user_id]
     };
@@ -123,14 +124,14 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:shortURL', (req, res) => {
   const userlink = urlsForUser(req.session.user_id)
-  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //check if link exists or belong to the user
+  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]) {  //check if link exists or belong to the user
     res.status('400');
-    res.send('This url does not exist or not available for you to edit')
+    return res.send('This url does not exist or not available for you to edit')
   }
-  
-  const templateVars = { 
+
+  const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL, 
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.session.user_id],
     counter: urlDatabase[req.params.shortURL].counter,
     visitors: urlDatabase[req.params.shortURL].visitors.length,
@@ -141,70 +142,86 @@ app.get('/urls/:shortURL', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  if (!urlDatabase[req.params.shortURL]){  //check if link exists or belong to the user
+  if (!urlDatabase[req.params.shortURL]) {  //check if link exists
     res.status('400');
     res.send('This url does not exist')
   }
-  const longURL = urlDatabase[req.params.shortURL].longURL;
   urlDatabase[req.params.shortURL].counter += 1;  //increase count by 1 everytime a get request is sent for this link
   // check if there's visitor cookie, issue visitor cookie if it's a new visitor
-  if(!req.session.visitor_id){
+  if (!req.session.visitor_id) {
     let newID = generateRandomString();
     req.session.visitor_id = newID;
     urlDatabase[req.params.shortURL].visitors.push(newID)   //stores visitor id
   } else { // if visitor has an exisiting id, but has not visited this link yet, store id in database
-    if(!urlDatabase[req.params.shortURL].visitors.includes(req.session.visitor_id)){
+    if (!urlDatabase[req.params.shortURL].visitors.includes(req.session.visitor_id)) {
       urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id)
-    } 
+    }
   };
   // store timestamp and visitor id for each visit
   urlDatabase[req.params.shortURL].visits.push(`Visited by ${req.session.visitor_id} on ${Date()}`);
+  //redirct to longURL
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
 app.post('/urls', (req, res) => {
-  if (req.session.user_id){
+  if (req.session.user_id) {
+    //checking if link contains :// to prevent relative path redirection bug
+    let regExp = /:\/\//;
+    let longURL = "";
+    if (regExp.exec(req.body.longURL)) {
+      longURL = req.body.longURL;
+    } else {
+      longURL = "http://" + req.body.longURL;
+    }
     const short = generateRandomString();
     urlDatabase[short] = {              // updating urlDatabase with objects of shortURL{} 
-      longURL: req.body.longURL,
+      longURL: longURL,
       userID: req.session.user_id,
       counter: 0,
       visitors: [],
       visits: [],
       createdTime: new Date()
-    }; 
-    res.redirect('/urls/'+short);
+    };
+    res.redirect('/urls/' + short);
   } else {
     res.status('400');
-    res.send('Please login')
+    res.send('Please login');
   }
 });
 
 //listening for put requests to /urls/:shortURL
 app.put('/urls/:shortURL', (req, res) => {
   const userlink = urlsForUser(req.session.user_id);
-  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Check if link exists or belong to user
+  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]) {  //Check if link exists or belong to user
     res.status('400');
-    res.send('This url does not exist or not available for you to edit')
+    return res.send('This url does not exist or not available for you to edit');
   }
-
-  urlDatabase[req.params.shortURL].longURL = req.body.newURL;
+  //checking if link contains :// to prevent relative path redirection bug
+  let regExp = /:\/\//;
+  let longURL = "";
+  if (regExp.exec(req.body.newURL)) {
+    longURL = req.body.newURL;
+  } else {
+    longURL = "http://" + req.body.newURL;
+  }
+  urlDatabase[req.params.shortURL].longURL = longURL;
   res.redirect('/urls/');
 });
 
 //listening for delete requests to /urls/:shortURL
 app.delete('/urls/:shortURL', (req, res) => {
   const userlink = urlsForUser(req.session.user_id);
-  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]){  //Check if link exists or belong to user
+  if (!urlDatabase[req.params.shortURL] || !userlink[req.params.shortURL]) {  //Check if link exists or belong to user
     res.status('400');
-    res.send('This url does not exist or not available for you to delete')
+    return res.send('This url does not exist or not available for you to delete');
   }
   delete urlDatabase[req.params.shortURL];
   res.redirect('/urls');
 });
 
-app.get('/login', (req, res) =>{
-  if (users[req.session.user_id]){
+app.get('/login', (req, res) => {
+  if (users[req.session.user_id]) {
     res.redirect('/urls');
   } else {
     const templateVars = {
@@ -214,39 +231,39 @@ app.get('/login', (req, res) =>{
   }
 });
 
-app.get ('/register', (req,res) => {
-  if (users[req.session.user_id]){
+app.get('/register', (req, res) => {
+  if (users[req.session.user_id]) {
     res.redirect('/urls');
   } else {
     const templateVars = {
-    user: users[req.session.user_id]
+      user: users[req.session.user_id]
     };
-  res.render('urls_register', templateVars);
+    res.render('urls_register', templateVars);
   }
 });
 
 app.post('/login', (req, res) => {
   const userAccount = emailLookUp(req.body.email);
-  if (userAccount){ 
-    if (bcrypt.compareSync(req.body.password, userAccount.password)){
+  if (userAccount) {
+    if (bcrypt.compareSync(req.body.password, userAccount.password)) {
       req.session.user_id = userAccount.id; //issued cookie after log in
       res.redirect('/urls');
     } else {
       res.status('403')
-      res.send('Error 403 - Forbidden!');      
+      res.send('Error 403 - Forbidden!');
     }
   } else {
     res.status('403')
     res.send('Error 403 - Forbidden!');
-  }   
+  }
 });
 
-app.post ('/register', (req,res) =>{
-  if (!req.body.email || !req.body.password || emailLookUp(req.body.email)){
+app.post('/register', (req, res) => {
+  if (!req.body.email || !req.body.password || emailLookUp(req.body.email)) {
     res.status('400');
-    return res.send('Error 400 - Bad Request!'); 
+    return res.send('Error 400 - Bad Request!');
   }
-  
+
   newID = generateRandomString();
   users[newID] = {
     id: newID,
@@ -263,5 +280,5 @@ app.post('/logout', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log( `TinyApp server listening on port ${PORT}!`);
+  console.log(`TinyApp server listening on port ${PORT}!`);
 });
